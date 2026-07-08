@@ -1,1 +1,338 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سامانه تحت وب فروش همزمان سیم‌کارت</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- اتصال به کتابخانه رسمی Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://v1.fontapi.ir/css/Vazir');
+        body { font-family: 'Vazir', sans-serif; }
+        .tab-content { display: none; opacity: 0; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col justify-between">
 
+    <script>
+        // ⚠️ اطلاعات Supabase خود را دقیقاً اینجا وارد کنید:
+        const SUPABASE_URL = "https://ddvcqwkadzxhgotgrott.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkdmNxd2thZHp4aGdvdGdyb3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0OTg5OTYsImV4cCI6MjA5OTA3NDk5Nn0.PuLgIDHEpwlShTVUaadYLs8FIb1OBRt2Fo_BEPQjHMI";
+        
+        // راه‌اندازی اتصال به دیتابیس ابری
+        const supabase = SUPABASE.createClient(SUPABASE_URL, SUPABASE_KEY);
+    </script>
+
+    <!-- هدر -->
+    <header class="bg-gray-800 border-b border-gray-700 p-4 shadow-lg">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold text-indigo-400 flex items-center gap-2">
+                <span>🌐</span> سامانه تحت وب فروش همزمان سیم‌کارت (Supabase Cloud)
+            </h1>
+            <div class="flex bg-gray-900 p-1 rounded-lg border border-gray-700">
+                <button id="btn-operator" onclick="switchTab('operator')" class="px-4 py-2 rounded-md text-sm font-medium transition-all bg-indigo-600 text-white shadow shadow-indigo-500/50">
+                    پنل تماس اپراتور
+                </button>
+                <button id="btn-admin" onclick="switchTab('admin')" class="px-4 py-2 rounded-md text-sm font-medium transition-all text-gray-400 hover:text-white">
+                    افزودن شماره و مدیریت
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- محتوای اصلی -->
+    <main class="max-w-6xl mx-auto p-4 flex-grow w-full my-6">
+
+        <!-- ================= تب اول: پنل اپراتور ================= -->
+        <div id="tab-operator" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- بخش تماس جاری -->
+                <div class="md:col-span-2 bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl flex flex-col justify-between min-h-[420px]">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs bg-indigo-900/50 text-indigo-300 border border-indigo-700/50 px-3 py-1 rounded-full font-medium flex items-center gap-1">
+                                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> اتصال ابری زنده
+                            </span>
+                            <div class="text-sm text-gray-400">باقی‌مانده در صف کل: <span id="remaining-count" class="text-indigo-400 font-bold">0</span></div>
+                        </div>
+                        
+                        <!-- نمایش شماره بزرگ و شماره مادر زیر آن -->
+                        <div class="text-center my-6 bg-gray-900/60 py-6 rounded-xl border border-gray-700 relative overflow-hidden">
+                            <div id="current-phone-display" class="text-4xl md:text-5xl font-black tracking-widest text-white select-all inline-block px-8">
+                                در حال بارگذاری...
+                            </div>
+                            <div class="text-sm text-indigo-400 mt-3 font-mono border-t border-gray-800 pt-2 inline-block px-4">
+                                🔑 شماره مادر: <span id="current-base-display" class="tracking-wider font-bold">--------</span>
+                            </div>
+                        </div>
+
+                        <!-- فیلد یادداشت اپراتور -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-400 mb-2">توضیحات یا یادداشت اپراتور:</label>
+                            <input id="operator-note" type="text" placeholder="توضیحات تماس جاری را اینجا بنویسید..." class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors">
+                        </div>
+                    </div>
+
+                    <!-- دکمه‌های ثبت وضعیت سریع -->
+                    <div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <button onclick="submitStatus('موفق (فروخته شد)')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 px-4 rounded-xl shadow-lg transition-all active:scale-95">🟢 موفق</button>
+                            <button onclick="submitStatus('عدم پاسخ / اشغال')" class="bg-amber-600 hover:bg-amber-500 text-white font-medium py-3 px-4 rounded-xl shadow-lg transition-all active:scale-95">🟡 عدم پاسخ</button>
+                            <button onclick="submitStatus('عدم تمایل / بلاک')" class="bg-rose-600 hover:bg-rose-500 text-white font-medium py-3 px-4 rounded-xl shadow-lg transition-all active:scale-95">🔴 عدم تمایل</button>
+                            <button onclick="submitStatus('خاموش / واگذار نشده')" class="bg-gray-600 hover:bg-gray-500 text-white font-medium py-3 px-4 rounded-xl shadow-lg transition-all active:scale-95">⚫ خاموش</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بخش آمار سریع -->
+                <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 text-gray-200 border-b border-gray-700 pb-2">📊 گزارش کارکرد ابری</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center bg-gray-900/50 p-3 rounded-lg border border-gray-700">
+                                <span class="text-gray-400">کل تماس‌های گرفته شده:</span>
+                                <span id="stat-total" class="font-bold text-white">0</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-emerald-950/30 p-3 rounded-lg border border-emerald-900/30 text-emerald-400">
+                                <span>💸 کل فروخته شده:</span>
+                                <span id="stat-success" class="font-bold">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= تب دوم: بخش مدیریت ================= -->
+        <div id="tab-admin" class="tab-content">
+            <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl mb-6">
+                <h2 class="text-xl font-bold mb-4 text-indigo-400">➕ افزودن شماره مادر و تولید خودکار لیست</h2>
+                <div class="flex flex-col sm:flex-row gap-4 items-end">
+                    <div class="flex-grow w-full">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">شماره موبایل مادر را وارد کنید:</label>
+                        <input id="base-phone-input" type="text" placeholder="مثال: 09911234678" maxlength="11" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-left font-mono text-lg focus:outline-none focus:border-indigo-500 tracking-wider">
+                    </div>
+                    <button id="btn-generate" onclick="generateNumbers()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3.5 rounded-lg shadow-lg transition-all active:scale-95 whitespace-nowrap">
+                        🚀 تولید و تزریق به دیتابیس ابری
+                    </button>
+                </div>
+            </div>
+
+            <!-- جدول کل دیتابیس -->
+            <div class="bg-gray-800 rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
+                <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-gray-200">🗂️ دیتابیس مرکزی آنلاین (Supabase)</h2>
+                    <button onclick="clearDatabase()" class="text-xs bg-rose-950/50 text-rose-400 border border-rose-900 hover:bg-rose-900/50 px-3 py-2 rounded-lg transition-colors">🗑️ پاکسازی دیتابیس</button>
+                </div>
+                <div class="overflow-x-auto max-h-[500px]">
+                    <table class="w-full text-right border-collapse">
+                        <thead class="bg-gray-900/80 sticky top-0 border-b border-gray-700 text-gray-400 text-sm">
+                            <tr>
+                                <th class="p-4">#</th>
+                                <th class="p-4">شماره تولید شده</th>
+                                <th class="p-4">شماره اصلی (مادر)</th>
+                                <th class="p-4">وضعیت تماس</th>
+                                <th class="p-4">یادداشت اپراتور</th>
+                            </tr>
+                        </thead>
+                        <tbody id="database-table-body" class="divide-y divide-gray-700 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const prefixes = ['0910','0911','0912','0913','0914','0915','0916','0917','0918','0919','0903','0904','0905','0930','0933','0935','0936','0937','0938','0939','0900','0901','0902','0920','0921','0922','0999'];
+        let currentCallRecord = null;
+
+        window.onload = function() {
+            if(SUPABASE_URL.includes("آدرس_پروژه")) {
+                alert("لطفاً ابتدا آدرس URL و API Key پروژه Supabase خود را در ابتدای کدهای جاوااسکریپت خطوط ۲۶ و ۲۷ تنظیم کنید.");
+                return;
+            }
+            updateOperatorPanel();
+        };
+
+        function switchTab(tabName) {
+            const btnOp = document.getElementById('btn-operator');
+            const btnAd = document.getElementById('btn-admin');
+            const tabOp = document.getElementById('tab-operator');
+            const tabAd = document.getElementById('tab-admin');
+
+            if(tabName === 'operator') {
+                btnOp.className = "px-4 py-2 rounded-md text-sm font-medium transition-all bg-indigo-600 text-white shadow shadow-indigo-500/50";
+                btnAd.className = "px-4 py-2 rounded-md text-sm font-medium transition-all text-gray-400 hover:text-white";
+                gsap.to(tabAd, {duration: 0.1, opacity: 0, onComplete: () => {
+                    tabAd.classList.remove('active');
+                    tabOp.classList.add('active');
+                    gsap.to(tabOp, {duration: 0.2, opacity: 1});
+                }});
+                updateOperatorPanel();
+            } else {
+                btnAd.className = "px-4 py-2 rounded-md text-sm font-medium transition-all bg-indigo-600 text-white shadow shadow-indigo-500/50";
+                btnOp.className = "px-4 py-2 rounded-md text-sm font-medium transition-all text-gray-400 hover:text-white";
+                gsap.to(tabOp, {duration: 0.1, opacity: 0, onComplete: () => {
+                    tabOp.classList.remove('active');
+                    tabAd.classList.add('active');
+                    gsap.to(tabAd, {duration: 0.2, opacity: 1});
+                }});
+                renderDatabaseTable();
+            }
+        }
+
+        // افزودن دسته‌ای به دیتابیس ابری
+        async function generateNumbers() {
+            const input = document.getElementById('base-phone-input').value.trim();
+            const btn = document.getElementById('btn-generate');
+            if (input.length < 11 || !input.startsWith('09')) {
+                alert('شماره اشتباه است.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "در حال تزریق داده...";
+
+            const lastSevenDigits = input.substring(4);
+            const rowsToInsert = prefixes.map(prefix => ({
+                phone: prefix + lastSevenDigits,
+                base_phone: input,
+                status: 'در انتظار تماس'
+            }));
+
+            // ثبت در Supabase (با نادیده گرفتن کدهای تکراری بر اساس فیلد unique)
+            const { error } = await supabase.from('sim_calls').upsert(rowsToInsert, { onConflict: 'phone' });
+
+            btn.disabled = false;
+            btn.innerText = "🚀 تولید و تزریق به دیتابیس ابری";
+
+            if (error) {
+                alert("خطا در ذخیره‌سازی: " + error.message);
+            } else {
+                alert('تمام شماره‌های جدید با موفقیت به دیتابیس آنلاین Supabase اضافه شدند.');
+                document.getElementById('base-phone-input').value = '';
+                renderDatabaseTable();
+            }
+        }
+
+        // لود شماره و اعمال قفل همزمانی روی سرور
+        async function updateOperatorPanel() {
+            const display = document.getElementById('current-phone-display');
+            const baseDisplay = document.getElementById('current-base-display');
+            const remainingText = document.getElementById('remaining-count');
+            const noteInput = document.getElementById('operator-note');
+
+            // دریافت آمار از سرور
+            const { data: countData } = await supabase.from('sim_calls').select('status');
+            if (countData) {
+                remainingText.innerText = countData.filter(item => item.status === 'در انتظار تماس').length;
+                document.getElementById('stat-total').innerText = countData.filter(item => !['در انتظار تماس', 'در حال تماس...'].includes(item.status)).length;
+                document.getElementById('stat-success').innerText = countData.filter(item => item.status === 'موفق (فروخته شد)').length;
+            }
+
+            // پیدا کردن ۱ شماره کاملاً آزاد از سرور
+            const { data, error } = await supabase
+                .from('sim_calls')
+                .select('*')
+                .eq('status', 'در انتظار تماس')
+                .order('id', { ascending: true })
+                .limit(1);
+
+            if (data && data.length > 0) {
+                const selectedRecord = data[0];
+
+                // 🔐 قفل تراکنش همزمانی: فوراً وضعیت را در سرور قفل می‌کنیم تا اپراتور دیگر این شماره را لود نکند
+                const { data: lockData } = await supabase
+                    .from('sim_calls')
+                    .update({ status: 'در حال تماس...' })
+                    .eq('id', selectedRecord.id)
+                    .eq('status', 'در انتظار تماس') // شرط کنترل اصالت همزمانی
+                    .select();
+
+                // اگر قفل با موفقیت انجام شد، شماره نمایش داده می‌شود
+                if (lockData && lockData.length > 0) {
+                    currentCallRecord = lockData[0];
+                    display.innerText = currentCallRecord.phone;
+                    baseDisplay.innerText = currentCallRecord.base_phone; // نمایش شماره مادر زیر آن
+                    noteInput.value = '';
+                    gsap.fromTo([display, baseDisplay], {opacity: 0, y: 5}, {opacity: 1, y: 0, duration: 0.3});
+                } else {
+                    // تداخل رخ داده (اپراتور دیگر صدم ثانیه‌ای زودتر گرفته)، تلاش مجدد خودکار برای شماره بعدی
+                    updateOperatorPanel();
+                }
+            } else {
+                currentCallRecord = null;
+                display.innerText = "شماره‌ای در صف نیست";
+                baseDisplay.innerText = "--------";
+            }
+        }
+
+        // ثبت نهایی وضعیت روی دیتابیس ابری
+        async function submitStatus(statusName) {
+            if (!currentCallRecord) return;
+
+            const note = document.getElementById('operator-note').value.trim();
+
+            const { error } = await supabase
+                .from('sim_calls')
+                .update({ status: statusName, note: note, updated_at: new Date() })
+                .eq('id', currentCallRecord.id);
+
+            if (error) {
+                alert("خطا در ثبت وضعیت: " + error.message);
+                return;
+            }
+
+            gsap.to("#current-phone-display", {opacity: 0, scale: 0.9, duration: 0.15, onComplete: () => {
+                updateOperatorPanel();
+            }});
+        }
+
+        // رندر کردن جدول کل دیتابیس از روی سرور ابری
+        async function renderDatabaseTable() {
+            const tbody = document.getElementById('database-table-body');
+            tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500">در حال اتصال و دریافت اطلاعات از سرور...</td></tr>`;
+
+            const { data, error } = await supabase
+                .from('sim_calls')
+                .select('*')
+                .order('id', { ascending: true });
+
+            if(error || !data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500">دیتابیس مرکزی آنلاین خالی است.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.className = "hover:bg-gray-700/30 border-b border-gray-700";
+                row.innerHTML = `
+                    <td class="p-4 text-gray-500">${index + 1}</td>
+                    <td class="p-4 font-mono font-bold text-white">${item.phone}</td>
+                    <td class="p-4 font-mono text-gray-400">${item.base_phone}</td>
+                    <td class="p-4"><span class="text-indigo-400">${item.status}</span></td>
+                    <td class="p-4 text-gray-400 max-w-[200px] truncate">${item.note || '---'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // پاکسازی دیتابیس ابری
+        async function clearDatabase() {
+            if(confirm('آیا مطمئن هستید که می‌خواهید تمام شماره‌ها را از روی سرور ابری به کل حذف کنید؟')) {
+                const { error } = await supabase.from('sim_calls').delete().neq('id', 0); // حذف کل ردیف‌ها
+                if (error) alert(error.message);
+                renderDatabaseTable();
+                updateOperatorPanel();
+            }
+        }
+    </script>
+</body>
+</html>
