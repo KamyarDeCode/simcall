@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سامانه پیشرفته هوشمند مدیریت فروش سیم‌کارت</title>
+    <title>سامانه هوشمند فروش سیم‌کارت - نسخه ارتقایافته</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -21,7 +21,7 @@
         const SHEET_API_URL = "https://api.steinhq.com/v1/storages/6a4e239792b1163e97179731";
         
         let currentOperator = localStorage.getItem('active_operator') || '';
-        const DAILY_GOAL = 10; // هدف روزانه اپراتورها
+        const DAILY_GOAL = 10;
     </script>
 
     <div id="login-overlay" class="fixed inset-0 bg-gray-950/95 z-50 flex items-center justify-center p-4 transition-all duration-300 hidden">
@@ -31,7 +31,7 @@
             <div class="space-y-3">
                 <button onclick="setOperator('عباسی')" class="w-full bg-gray-800 hover:bg-indigo-600 py-3 rounded-xl font-bold transition-all text-white active:scale-95">🎧 اپراتور عباسی</button>
                 <button onclick="setOperator('شفیعی')" class="w-full bg-gray-800 hover:bg-indigo-600 py-3 rounded-xl font-bold transition-all text-white active:scale-95">🎧 اپراتور شفیعی</button>
-                <button onclick="setOperator('کامیار')" class="w-full bg-gray-800 hover:bg-indigo-600 py-3 rounded-xl font-bold transition-all text-white active:scale-95">👑 کامیار (مدیریت/اپراتور)</button>
+                <button onclick="setOperator('کامیار')" class="w-full bg-gray-800 hover:bg-indigo-600 py-3 rounded-xl font-bold transition-all text-white active:scale-95">🎧 کامیار (مدیریت/اپراتور)</button>
             </div>
         </div>
     </div>
@@ -39,7 +39,7 @@
     <header class="bg-gray-900 border-b border-gray-800 p-4 shadow-lg sticky top-0 z-40 backdrop-blur-md bg-opacity-90">
         <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <h1 class="text-xl font-bold text-indigo-400 flex items-center gap-2">
-                <span>🎯</span> سامانه هوشمند توزیع وزنی همراه اول
+                <span>🎯</span> سامانه هوشمند فروش و مانیتورینگ زنده
             </h1>
             <div class="flex items-center gap-4">
                 <span id="operator-badge" class="text-xs bg-indigo-950 text-indigo-300 border border-indigo-800/50 px-3 py-1.5 rounded-xl font-bold"></span>
@@ -67,7 +67,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="md:col-span-2 bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl flex flex-col justify-between min-h-[440px]">
+                <div class="md:col-span-2 bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl flex flex-col justify-between min-h-[460px]">
                     <div>
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-xs bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-3 py-1 rounded-full font-medium flex items-center gap-1">
@@ -96,30 +96,62 @@
                         <button id="btn-wa" onclick="openWhatsApp()" class="w-full bg-teal-600/10 hover:bg-teal-600 text-teal-400 hover:text-white border border-teal-800/50 font-bold py-2 rounded-xl text-xs transition-all flex items-center justify-center gap-1">
                             💬 پیگیری سریع و ارسال مشخصات در واتس‌آپ (بدون ذخیره)
                         </button>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                            <button onclick="submitStatus('موفق (فروخته شد)')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all active:scale-95 text-sm">🟢 موفق</button>
-                            <button onclick="submitStatus('عدم پاسخ / اشغال')" class="bg-amber-600 hover:bg-amber-500 text-white font-medium py-3.5 rounded-xl shadow-lg transition-all active:scale-95 text-sm">🟡 عدم پاسخ</button>
-                            <button onclick="submitStatus('عدم تمایل / بلاک')" class="bg-rose-600 hover:bg-rose-500 text-white font-medium py-3.5 rounded-xl shadow-lg transition-all active:scale-95 text-sm">🔴 عدم تمایل</button>
-                            <button onclick="submitStatus('خاموش / واگذار نشده')" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3.5 rounded-xl shadow-lg transition-all active:scale-95 text-sm">⚫ خاموش</button>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                            <button onclick="submitStatus('موفق (فروخته شد)')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs transition-all active:scale-95 shadow">🟢 موفق</button>
+                            <button onclick="submitStatus('عدم پاسخ / اشغال')" class="bg-amber-600 hover:bg-amber-500 text-white font-medium py-3 rounded-xl text-xs transition-all active:scale-95 shadow">🟡 بی‌پاسخ</button>
+                            <button onclick="submitStatus('عدم تمایل / بلاک')" class="bg-rose-600 hover:bg-rose-500 text-white font-medium py-3 rounded-xl text-xs transition-all active:scale-95 shadow">🔴 عدم‌تمایل</button>
+                            <button onclick="submitStatus('خاموش (پیگیری مجدد)')" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 rounded-xl text-xs transition-all active:scale-95 shadow">⚫ خاموش</button>
+                            <button onclick="submitStatus('واگذار نشده (حذف قطعی)')" class="bg-red-950/80 hover:bg-red-900 border border-red-700/50 text-red-300 font-medium py-3 rounded-xl text-xs transition-all active:scale-95 shadow col-span-2 sm:col-span-1">❌ واگذارنشده</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl flex flex-col justify-between">
                     <div>
-                        <h3 class="text-md font-bold mb-4 text-gray-200 border-b border-gray-800 pb-2">📊 کارکرد امروز شما</h3>
-                        <div class="space-y-3 text-sm">
-                            <div class="flex justify-between items-center bg-gray-950 p-3 rounded-xl border border-gray-800">
-                                <span class="text-gray-400">کل شماره‌های دریافتی:</span>
-                                <span id="op-stat-total" class="font-bold text-white">0</span>
+                        <h3 class="text-sm font-bold mb-4 text-gray-200 border-b border-gray-800 pb-2 flex justify-between">
+                            <span>📊 نمودار بازدهی امروز شما</span>
+                            <span class="text-xs text-gray-500">مجموع: <span id="op-stat-total" class="font-mono">0</span></span>
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-emerald-400 font-bold">🟢 موفق (فروش): <span id="op-stat-success">0</span></span>
+                                    <span id="op-perc-success" class="font-mono text-gray-450">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-950 h-2 rounded-full overflow-hidden border border-gray-850">
+                                    <div id="bar-success" class="bg-emerald-500 h-full w-0 transition-all duration-550"></div>
+                                </div>
                             </div>
-                            <div class="flex justify-between items-center bg-emerald-950/20 p-3 rounded-xl border border-emerald-900/30 text-emerald-400">
-                                <span>💸 موفق و فروخته شده:</span>
-                                <span id="op-stat-success" class="font-bold">0</span>
+
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-amber-400 font-bold">🟡 عدم پاسخ / پیگیری: <span id="op-stat-pending">0</span></span>
+                                    <span id="op-perc-pending" class="font-mono text-gray-450">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-950 h-2 rounded-full overflow-hidden border border-gray-850">
+                                    <div id="bar-pending" class="bg-amber-500 h-full w-0 transition-all duration-550"></div>
+                                </div>
                             </div>
-                            <div class="flex justify-between items-center bg-amber-950/20 p-3 rounded-xl border border-amber-900/30 text-amber-400">
-                                <span>⏳ عدم پاسخ / پیگیری:</span>
-                                <span id="op-stat-pending" class="font-bold">0</span>
+
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-rose-400 font-bold">🔴 عدم تمایل / بلاک: <span id="op-stat-reject">0</span></span>
+                                    <span id="op-perc-reject" class="font-mono text-gray-450">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-950 h-2 rounded-full overflow-hidden border border-gray-850">
+                                    <div id="bar-reject" class="bg-rose-500 h-full w-0 transition-all duration-550"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-400 font-bold">⚫ خاموش (موقت): <span id="op-stat-off">0</span></span>
+                                    <span id="op-perc-off" class="font-mono text-gray-450">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-950 h-2 rounded-full overflow-hidden border border-gray-850">
+                                    <div id="bar-off" class="bg-gray-500 h-full w-0 transition-all duration-550"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -128,7 +160,6 @@
         </div>
 
         <div id="tab-admin" class="tab-content">
-            
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div class="bg-gray-900 p-4 rounded-xl border border-gray-800">
                     <div class="text-xs text-gray-400 mb-1">کل بانک دیتابیس</div>
@@ -142,27 +173,26 @@
                     <div class="text-xs text-gray-400 mb-1">موجودی صف 0912</div>
                     <div id="admin-count-0912" class="text-2xl font-black">0</div>
                 </div>
-                <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-amber-400">
-                    <div class="text-xs text-gray-400 mb-1">تماس‌های بی‌پاسخ کل</div>
-                    <div id="admin-total-no-ans" class="text-2xl font-black">0</div>
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-red-400">
+                    <div class="text-xs text-gray-400 mb-1">خطوط واگذار نشده حذف شده</div>
+                    <div id="admin-total-dead" class="text-2xl font-black">0</div>
                 </div>
             </div>
 
             <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl mb-6">
-                <h3 class="text-md font-bold text-indigo-400 mb-4 flex items-center gap-1">🏆 رتبه‌بندی و کارکرد تفکیک‌شده اپراتورها</h3>
+                <h3 class="text-md font-bold text-indigo-400 mb-4">🏆 رتبه‌بندی و کارکرد تفکیک‌شده اپراتورها</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-right text-sm">
                         <thead class="bg-gray-950 text-gray-400">
                             <tr>
                                 <th class="p-3 rounded-r-xl">نام اپراتور</th>
                                 <th class="p-3">کل تماس‌ها</th>
-                                <th class="p-3">تعداد فروش موفق</th>
-                                <th class="p-3">تعداد عدم پاسخ</th>
-                                <th class="p-3 rounded-l-xl">نرخ تبدیل (قدرت فروش)</th>
+                                <th class="p-3">فروش موفق</th>
+                                <th class="p-3">عدم پاسخ / خاموش</th>
+                                <th class="p-3 rounded-l-xl">نرخ تبدیل فروش</th>
                             </tr>
                         </thead>
-                        <tbody id="operator-ranking-body" class="divide-y divide-gray-800">
-                            </tbody>
+                        <tbody id="operator-ranking-body" class="divide-y divide-gray-800"></tbody>
                     </table>
                 </div>
             </div>
@@ -173,15 +203,15 @@
                     <div class="flex-grow w-full">
                         <input id="base-phone-input" type="text" placeholder="مثال: 09121234567" maxlength="11" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-white font-mono text-center tracking-widest focus:outline-none focus:border-indigo-500">
                     </div>
-                    <button id="btn-generate" onclick="generateNumbers()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3.5 rounded-xl transition-all whitespace-nowrap text-sm shadow-lg shadow-indigo-500/20">
+                    <button id="btn-generate" onclick="generateNumbers()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3.5 rounded-xl transition-all text-sm shadow-lg shadow-indigo-500/20">
                         🚀 تزریق دسته‌ای آنلاین
                     </button>
                 </div>
             </div>
 
             <div class="bg-gray-900 rounded-2xl border border-gray-800 shadow-xl overflow-hidden">
-                <div class="p-4 bg-gray-950 border-b border-gray-800 flex justify-between items-center">
-                    <h2 class="text-md font-bold text-gray-200">🗂️ مانتیورینگ لاگ ثبتی کل بانک (Google Sheets)</h2>
+                <div class="p-4 bg-gray-950 border-b border-gray-800">
+                    <h2 class="text-md font-bold text-gray-200">🗂️ مانیتورینگ لاگ ثبتی کل بانک (Google Sheets)</h2>
                 </div>
                 <div class="overflow-x-auto max-h-[400px]">
                     <table class="w-full text-right text-xs">
@@ -200,14 +230,12 @@
                 </div>
             </div>
         </div>
-
     </main>
 
     <script>
         const prefixes = ['0910','0911','0912','0913','0914','0915','0916','0917','0918','0919','0903','0904','0905','0930','0933','0935','0936','0937','0938','0939','0900','0901','0902','0920','0921','0922','0999'];
         let currentCallRecord = null;
 
-        // بررسی وضعیت لاگین اپراتور
         if (!currentOperator) {
             document.getElementById('login-overlay').classList.remove('hidden');
         } else {
@@ -297,7 +325,7 @@
             }
         }
 
-        // 🧠 الگوریتم شانس لود ده‌برابری خطوط 0912 همراه اول (Weighted Random Choice)
+        // توزیع وزنی پیشرفته خطوط با در نظر گرفتن چرخه‌ مجدد برای خطوط خاموش
         async function updateOperatorPanel() {
             if (!currentOperator) return;
             const display = document.getElementById('current-phone-display');
@@ -314,19 +342,41 @@
                     return;
                 }
 
-                // فیلتر شماره‌های آزاد
-                const availableRecords = allRows.filter(item => item.status === 'در انتظار تماس');
+                // صف تماس شامل رکوردهایی است که یا "در انتظار تماس" هستند یا "خاموش (پیگیری مجدد)" تا از چرخه خارج نشوند.
+                const availableRecords = allRows.filter(item => ['در انتظار تماس', 'خاموش (پیگیری مجدد)'].includes(item.status));
                 remainingText.innerText = availableRecords.length;
 
-                // به‌روزرسانی آمار و گیمیفیکیشن اپراتور جاری
+                // محاسبه آمارهای زنده اپراتور
                 const opRecords = allRows.filter(item => item.operator_name === currentOperator);
                 const opSuccess = opRecords.filter(item => item.status === 'موفق (فروخته شد)').length;
-                
-                document.getElementById('op-stat-total').innerText = opRecords.length;
-                document.getElementById('op-stat-success').innerText = opSuccess;
-                document.getElementById('op-stat-pending').innerText = opRecords.filter(item => item.status === 'عدم پاسخ / اشغال').length;
+                const opPending = opRecords.filter(item => item.status === 'عدم پاسخ / اشغال').length;
+                const opReject = opRecords.filter(item => item.status === 'عدم تمایل / بلاک').length;
+                const opOff = opRecords.filter(item => item.status === 'خاموش (پیگیری مجدد)').length;
+                const opTotal = opSuccess + opPending + opReject + opOff;
 
-                // محاسبه درصد پیشرفت هدف روزانه (تا سقف ۱۰ فروش)
+                document.getElementById('op-stat-total').innerText = opTotal;
+                document.getElementById('op-stat-success').innerText = opSuccess;
+                document.getElementById('op-stat-pending').innerText = opPending;
+                document.getElementById('op-stat-reject').innerText = opReject;
+                document.getElementById('op-stat-off').innerText = opOff;
+
+                // محاسبه درصدهای نمودارهای میله‌ای پیشرفت
+                const pSuccess = opTotal > 0 ? Math.round((opSuccess / opTotal) * 100) : 0;
+                const pPending = opTotal > 0 ? Math.round((opPending / opTotal) * 100) : 0;
+                const pReject = opTotal > 0 ? Math.round((opReject / opTotal) * 100) : 0;
+                const pOff = opTotal > 0 ? Math.round((opOff / opTotal) * 100) : 0;
+
+                document.getElementById('op-perc-success').innerText = `${pSuccess}%`;
+                document.getElementById('op-perc-pending').innerText = `${pPending}%`;
+                document.getElementById('op-perc-reject').innerText = `${pReject}%`;
+                document.getElementById('op-perc-off').innerText = `${pOff}%`;
+
+                document.getElementById('bar-success').style.width = `${pSuccess}%`;
+                document.getElementById('bar-pending').style.width = `${pPending}%`;
+                document.getElementById('bar-reject').style.width = `${pReject}%`;
+                document.getElementById('bar-off').style.width = `${pOff}%`;
+
+                // نوار گیمیفیکیشن هدف روزانه
                 const goalPercent = Math.min((opSuccess / DAILY_GOAL) * 100, 100);
                 document.getElementById('op-daily-done').innerText = opSuccess;
                 document.getElementById('op-daily-percent').innerText = `${Math.round(goalPercent)}%`;
@@ -339,7 +389,7 @@
                     return;
                 }
 
-                // 🎯 الگوریتم وزنی: وزن دادن ۱۰ برابری به خطوطی که با 0912 شروع می‌شوند
+                // اعمال شانس ۱۰ برابری به خطوط باارزش 0912
                 let pool = [];
                 availableRecords.forEach(record => {
                     const weight = record.phone.startsWith('0912') ? 10 : 1;
@@ -348,16 +398,14 @@
                     }
                 });
 
-                // انتخاب کاملاً تصادفی یک رکورد بر اساس وزن‌های تعریف‌شده
                 const selectedRecord = pool[Math.floor(Math.random() * pool.length)];
 
                 if (selectedRecord) {
-                    // قفل همزمانی سریع بر روی گوگل شیت بر اساس آیدی ردیف و الصاق نام اپراتور فعال
                     await fetch(`${SHEET_API_URL}/Sheet1`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            condition: { id: selectedRecord.id, status: 'در انتظار تماس' },
+                            condition: { id: selectedRecord.id },
                             set: { status: 'در حال تماس...', operator_name: currentOperator }
                         })
                     });
@@ -366,12 +414,7 @@
                     display.innerText = selectedRecord.phone;
                     baseDisplay.innerText = selectedRecord.base_phone;
                     
-                    if(selectedRecord.phone.startsWith('0912')) {
-                        vipBadge.style.display = 'block';
-                    } else {
-                        vipBadge.style.display = 'none';
-                    }
-                    
+                    vipBadge.style.display = selectedRecord.phone.startsWith('0912') ? 'block' : 'none';
                     document.getElementById('operator-note').value = '';
                     gsap.fromTo([display, baseDisplay], {opacity: 0, y: 5}, {opacity: 1, y: 0, duration: 0.3});
                 }
@@ -394,7 +437,6 @@
                     })
                 });
 
-                // افکت آتش‌بازی در صورت ثبت فروش موفق
                 if(statusName === 'موفق (فروخته شد)') {
                     confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                 }
@@ -414,7 +456,6 @@
             window.open(`https://wa.me/${formattedPhone}?text=${text}`, '_blank');
         }
 
-        // 📊 توابع تخصصی بخش میز مدیریت و گزارش‌دهی حرفه‌ای
         async function renderAdminDashboard() {
             const tbody = document.getElementById('database-table-body');
             const rankingBody = document.getElementById('operator-ranking-body');
@@ -431,21 +472,19 @@
                     return;
                 }
 
-                // محاسبه آمارهای کلان بیزینس
                 document.getElementById('admin-total-db').innerText = data.length;
                 document.getElementById('admin-total-sales').innerText = data.filter(i => i.status === 'موفق (فروخته شد)').length;
-                document.getElementById('admin-count-0912').innerText = data.filter(i => i.phone.startsWith('0912') && i.status === 'در انتظار تماس').length;
-                document.getElementById('admin-total-no-ans').innerText = data.filter(i => i.status === 'عدم پاسخ / اشغال').length;
+                document.getElementById('admin-count-0912').innerText = data.filter(i => i.phone.startsWith('0912') && ['در انتظار تماس', 'خاموش (پیگیری مجدد)'].includes(i.status)).length;
+                document.getElementById('admin-total-dead').innerText = data.filter(i => i.status === 'واگذار نشده (حذف قطعی)').length;
 
-                // 🏆 پردازش آمارهای تفکیکی برای هر اپراتور (عباسی، شفیعی، کامیار)
                 const targetOperators = ['عباسی', 'شفیعی', 'کامیار'];
                 rankingBody.innerHTML = '';
                 
                 targetOperators.forEach(opName => {
                     const opRows = data.filter(i => i.operator_name === opName);
-                    const totalCalls = opRows.length;
                     const success = opRows.filter(i => i.status === 'موفق (فروخته شد)').length;
-                    const noAns = opRows.filter(i => i.status === 'عدم پاسخ / اشغال').length;
+                    const pendingOrOff = opRows.filter(i => ['عدم پاسخ / اشغال', 'خاموش (پیگیری مجدد)'].includes(i.status)).length;
+                    const totalCalls = opRows.length;
                     const conversionRate = totalCalls > 0 ? Math.round((success / totalCalls) * 100) : 0;
 
                     const tr = document.createElement('tr');
@@ -454,13 +493,12 @@
                         <td class="p-3 font-bold text-white">🎧 ${opName}</td>
                         <td class="p-3 font-mono">${totalCalls}</td>
                         <td class="p-3 text-emerald-400 font-bold">${success}</td>
-                        <td class="p-3 text-amber-400 font-bold">${noAns}</td>
+                        <td class="p-3 text-amber-400 font-bold">${pendingOrOff}</td>
                         <td class="p-3 font-bold text-indigo-400">${conversionRate}%</td>
                     `;
                     rankingBody.appendChild(tr);
                 });
 
-                // رندر کردن لاگ مانیتورینگ کلی جدول
                 tbody.innerHTML = '';
                 data.forEach((item, index) => {
                     const row = document.createElement('tr');
